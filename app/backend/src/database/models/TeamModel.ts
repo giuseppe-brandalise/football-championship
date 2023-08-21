@@ -8,7 +8,7 @@ import {
 import db from '.';
 // import OtherModel from './OtherModel';
 
-class TeamModel extends Model<InferAttributes<TeamModel>,
+export default class TeamModel extends Model<InferAttributes<TeamModel>,
 InferCreationAttributes<TeamModel>> {
   declare id: CreationOptional<number>;
   declare teamName: string;
@@ -43,5 +43,3 @@ TeamModel.init({
 
 // TeamModel.hasMany(OtherModel, { foreignKey: 'campoC', as: 'campoEstrangeiroC' });
 // TeamModel.hasMany(OtherModel, { foreignKey: 'campoD', as: 'campoEstrangeiroD' });
-
-export default TeamModel;
