@@ -24,4 +24,12 @@ describe('Tests for Teams', function() {
     expect(status).to.eq(200);
     expect(body).to.deep.eq(allTeams);
   });
+
+  it('should return one teams when requested an id', async function () {
+    const team = TeamModel.build({ id: 1, teamName: 'Loud' });
+    sinon.stub(TeamModel, 'findByPk').resolves(team);
+    const { status, body } = await chai.request(app).get('/teams/1');
+    expect(status).to.eq(200);
+    expect(body).to.deep.eq(team.dataValues);
+  })
 });
