@@ -3,7 +3,7 @@ import IUsers from '../../Interfaces/IUsers';
 
 export default {
   up(queryInterface: QueryInterface) {
-    return queryInterface.createTable<Model<IUsers>>('trybe_eval', {
+    return queryInterface.createTable<Model<IUsers>>('users', {
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -29,6 +29,6 @@ export default {
     });
   },
   down(queryInterface: QueryInterface) {
-    return queryInterface.dropTable('trybe_eval');
+    return queryInterface.dropTable('users');
   },
 };

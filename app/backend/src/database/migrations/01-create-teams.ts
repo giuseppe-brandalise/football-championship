@@ -3,20 +3,21 @@ import ITeams from '../../Interfaces/ITeams';
 
 export default {
   up(queryInterface: QueryInterface) {
-    return queryInterface.createTable<Model<ITeams>>('trybe_eval', {
+    return queryInterface.createTable<Model<ITeams>>('teams', {
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
       },
-      team_name: {
+      teamName: {
         type: DataTypes.STRING,
         allowNull: false,
+        field: 'team_name',
       }
     });
   },
   down(queryInterface: QueryInterface) {
-    return queryInterface.dropTable('trybe_eval');
+    return queryInterface.dropTable('teams');
   },
 };
