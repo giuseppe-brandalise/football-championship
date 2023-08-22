@@ -123,13 +123,12 @@ describe('Tests for Auth', function() {
     const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjkyNjUxOTk0fQ.F9_mSHOaHLZXbswdHWn7Ok2kGacekqm064vDhLNdssA';
     const { status, body } = await chai.request(app).get('/login/role')
       .set('authorization', token);
-    // expect(status).to.eq(200);
-    expect(body.message).to.deep.eq('role');
+    expect(status).to.eq(200);
     expect(body).to.haveOwnProperty('role');
   });
   it('should return the an error if there is no token', async function() {
     const { status, body } = await chai.request(app).get('/login/role');
-    expect(status).to.eq(400);
+    expect(status).to.eq(401);
     expect(body.message).to.deep.eq('Token not found');
   });
 });
