@@ -2,7 +2,7 @@ import * as jwt from 'jsonwebtoken';
 import IPayload from '../Interfaces/IPayload';
 
 export default class JwtUtils {
-  private static jwtSecret = process.env.JWT_SECRET || 'neverGonnaGiveYouUP';
+  private static jwtSecret = process.env.JWT_SECRET || '';
 
   static sign(payload: IPayload): string {
     return jwt.sign(payload, this.jwtSecret);

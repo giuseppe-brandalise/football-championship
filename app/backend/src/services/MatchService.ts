@@ -42,8 +42,13 @@ export default class MatchService {
     return modelResponse;
   }
 
-  async getById(id: string):Promise<IMatches | null> {
-    const modelResponse = await this.model.findByPk(id);
-    return modelResponse;
+  async finishMatch(id: string):Promise<IMatches | null> {
+    const [updateMatch] = await this.model.update(
+      { inProgress: false },
+      { where: { id } },
+    );
+    if (updateMatch === 0) return null;
+    const endedMatch = await this.model.findByPk(id);
+    return endedMatch;
   }
 }

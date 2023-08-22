@@ -7,6 +7,7 @@ import chaiHttp = require('chai-http');
 import { app } from '../app';
 import MatchModel from '../database/models/MatchModel';
 import allMatches from './mocks/matches.mocks';
+import token from './mocks/auth.mocks';
 
 
 chai.use(chaiHttp);
@@ -39,11 +40,20 @@ describe('Tests for Matches', function() {
     expect(body).to.deep.eq(allMatches[0]);
   });
 
-  // it('should return one teams when requested an id', async function () {
-  //   const team = TeamModel.build({ id: 1, teamName: 'Loud' });
-  //   sinon.stub(TeamModel, 'findByPk').resolves(team);
-  //   const { status, body } = await chai.request(app).get('/teams/1');
-  //   expect(status).to.eq(200);
-  //   expect(body).to.deep.eq(team.dataValues);
-  // })
+  it('shouldnt end a match without a token', async function() {
+    sinon.stub(MatchModel, 'update').resolves();
+    const { status, body } = await chai.request(app).patch('/matches/41/finished');
+    expect(status).to.eq(401);
+    expect(body).to.deep.eq({ message: 'Token not found' });
+  });
+
+  it('shouldnt end a match whith an invalid token', async function() {
+    sinon.stub(MatchModel, 'update').resolves([1]);
+    const match = MatchModel.build(allMatches[0]);
+    sinon.stub(MatchModel, 'findByPk').resolves(match)
+    const { status, body } = await chai.request(app).patch('/matches/41/finished')
+      .set('authorization', token);
+    expect(status).to.eq(401);
+    expect(body).to.deep.eq({ message: 'Token must be a valid token' });
+  });
 });

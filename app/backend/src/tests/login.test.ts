@@ -1,12 +1,14 @@
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 import * as bcrypt from 'bcryptjs';
+import JwtUtils from '../utils/JwtUtils';
 
 // @ts-ignore
 import chaiHttp = require('chai-http');
 
 import { app } from '../app';
 import UserModel from '../database/models/UserModel';
+import token from './mocks/auth.mocks';
 
 
 chai.use(chaiHttp);
@@ -34,6 +36,7 @@ describe('Tests for Login', function() {
     };
     sinon.stub(UserModel, 'findOne').resolves(user);
     sinon.stub(bcrypt, 'compareSync').resolves(true);
+    sinon.stub(JwtUtils, 'sign').resolves(token);
     const { status, body } = await chai.request(app).post('/login')
       .send(userLogin);
     expect(status).to.eq(200);
