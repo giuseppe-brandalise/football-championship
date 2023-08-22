@@ -6,8 +6,26 @@ export default class MatchService {
   private model = MatchModel;
 
   async getAll():Promise<IMatches[]> {
-    // const modelResponse = await this.model.findAll();
     const modelResponse = await this.model.findAll({
+      include: [
+        {
+          model: TeamModel,
+          as: 'homeTeam',
+          attributes: ['teamName'],
+        },
+        {
+          model: TeamModel,
+          as: 'awayTeam',
+          attributes: ['teamName'],
+        },
+      ],
+    });
+    return modelResponse;
+  }
+
+  async getByProgress(progress: boolean) {
+    const modelResponse = await this.model.findAll({
+      where: { inProgress: progress },
       include: [
         {
           model: TeamModel,
