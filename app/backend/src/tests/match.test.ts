@@ -1,5 +1,7 @@
 import * as sinon from 'sinon';
 import * as chai from 'chai';
+import * as bcrypt from 'bcryptjs';
+import JwtUtils from '../utils/JwtUtils';
 
 // @ts-ignore
 import chaiHttp = require('chai-http');
@@ -40,20 +42,76 @@ describe('Tests for Matches', function() {
     expect(body).to.deep.eq(allMatches[0]);
   });
 
+  it('should end a match', async function() {
+    sinon.stub(MatchModel, 'update').resolves([1]);
+    sinon.stub(bcrypt, 'compareSync').resolves(true);
+    sinon.stub(JwtUtils, 'verify').resolves(true);
+    const match = MatchModel.build(allMatches[0]);
+    sinon.stub(MatchModel, 'findByPk').resolves(match);
+    const { status, body } = await chai.request(app).patch('/matches/41/finish')
+      .set('authorization', token);
+    expect(status).to.eq(200);
+    expect(body).to.deep.eq({ message: 'Finished' });
+  });
+
   it('shouldnt end a match without a token', async function() {
-    sinon.stub(MatchModel, 'update').resolves();
-    const { status, body } = await chai.request(app).patch('/matches/41/finished');
+    sinon.stub(MatchModel, 'update').resolves([1]);
+    const match = MatchModel.build(allMatches[0]);
+    sinon.stub(MatchModel, 'findByPk').resolves(match);
+    const { status, body } = await chai.request(app).patch('/matches/41/finish');
     expect(status).to.eq(401);
     expect(body).to.deep.eq({ message: 'Token not found' });
   });
 
   it('shouldnt end a match whith an invalid token', async function() {
-    sinon.stub(MatchModel, 'update').resolves([1]);
-    const match = MatchModel.build(allMatches[0]);
-    sinon.stub(MatchModel, 'findByPk').resolves(match)
-    const { status, body } = await chai.request(app).patch('/matches/41/finished')
-      .set('authorization', token);
+    const { status, body } = await chai.request(app).patch('/matches/41/finish')
+      .set('authorization', 'invalid token');
     expect(status).to.eq(401);
     expect(body).to.deep.eq({ message: 'Token must be a valid token' });
   });
+
+  it('should edit a match', async function() {
+    sinon.stub(bcrypt, 'compareSync').resolves(true);
+    sinon.stub(JwtUtils, 'verify').resolves(true);
+    sinon.stub(MatchModel, 'update').resolves([1]);
+    const match = MatchModel.build(allMatches[0]);
+    sinon.stub(MatchModel, 'findByPk').resolves(match)
+    const { status, body } = await chai.request(app).patch('/matches/1/')
+      .set('authorization', token)
+      .send({
+        homeTeamGoals: '5',
+        awayTeamGoals: '2'
+      });
+    expect(status).to.eq(200);
+    expect(body).to.deep.eq({ message: 'Finished' });
+  });
+
+  it('should add a match', async function() {
+    const newMatch = {
+      homeTeamId: 16,
+      awayTeamId: 8,
+      homeTeamGoals: 2,
+      awayTeamGoals: 2,
+    };
+    const endMatch = {
+      id: 1,
+      homeTeamId: 16,
+      awayTeamId: 8,
+      homeTeamGoals: 2,
+      awayTeamGoals: 2,
+      inProgress: true,
+    }
+    const created = MatchModel.build(endMatch);
+    sinon.stub(bcrypt, 'compareSync').resolves(true);
+    sinon.stub(JwtUtils, 'verify').resolves(true);
+    sinon.stub(MatchModel, 'create').resolves(created);
+    const match = MatchModel.build(allMatches[0]);
+    sinon.stub(MatchModel, 'findByPk').resolves(match)
+    const { status, body } = await chai.request(app).post('/matches/')
+      .set('authorization', token)
+      .send(newMatch);
+    expect(status).to.eq(201);
+    expect(body).to.deep.eq(endMatch);
+  });
+  // teste
 });

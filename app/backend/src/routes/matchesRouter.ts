@@ -9,9 +9,21 @@ const matchesRouter = Router();
 matchesRouter.get('/', (req: Request, res: Response) => matchController.getAll(req, res));
 
 matchesRouter.patch(
-  '/:id/finished',
+  '/:id/finish',
   AuthMiddleware.verifyToken,
   (req: Request, res: Response) => matchController.finishMatch(req, res),
+);
+
+matchesRouter.patch(
+  '/:id',
+  AuthMiddleware.verifyToken,
+  (req: Request, res: Response) => matchController.editMatch(req, res),
+);
+
+matchesRouter.post(
+  '/',
+  AuthMiddleware.verifyToken,
+  (req: Request, res: Response) => matchController.addMatch(req, res),
 );
 
 export default matchesRouter;
